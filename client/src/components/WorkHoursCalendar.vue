@@ -50,7 +50,7 @@
           </th>
         </tr>
       </thead>
-      <tbody class="bg-white divide-y">
+      <tbody class="bg-white divide-y divide-gray-200">
         <tr
           v-for="day in calendarDays"
           :key="day.date"
@@ -298,7 +298,7 @@ export default {
           "relative",
         );
       } else {
-        classes.push("hover:bg-gray-50", "border-l-4");
+        classes.push("hover:bg-gray-50", "border-l-4", "border-l-transparent");
 
         if (day.dayType === "weekend")
           classes.push("bg-slate-50", "text-slate-700");

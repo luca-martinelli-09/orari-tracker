@@ -105,7 +105,7 @@
                   clip-rule="evenodd"
                 />
               </svg>
-              <span>Config</span>
+              <span>Impostazioni</span>
               <div
                 v-if="$route.name === 'Settings'"
                 class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-purple-500 rounded-full"
