@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  # app:
+  #   build: .
+  #   ports:
+  #     - "5000:5000"
+  #   environment:
+  #     - NODE_ENV=production
+  #     - MONGODB_URI=mongodb://admin:password@mongodb:27017/orari-tracker
+  #     - MINIO_ENDPOINT=minio
+  #     - MINIO_PORT=9000
+  #     - MINIO_ACCESS_KEY=minioaccesskey
+  #     - MINIO_SECRET_KEY=miniosecretkey
+  #   depends_on:
+  #     - mongodb
+  #     - minio
+  #   volumes:
+  #     - ./uploads:/app/uploads
+
+  mongodb:
+    image: mongo:7.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+
+  mongoexpress:
+    image: mongo-express
+    ports:
+      - "8380:8081"
+    environment:
+      - ME_CONFIG_MONGODB_URL=mongodb://admin:password@mongodb:27017
+    depends_on:
+      - mongodb
+
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9002:9000"
+      - "9003:9001"
+    environment:
+      - MINIO_ROOT_USER=minioaccesskey
+      - MINIO_ROOT_PASSWORD=miniosecretkey
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+
+volumes:
+  mongodb_data:
+  minio_data:
