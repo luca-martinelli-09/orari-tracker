@@ -1,7 +1,7 @@
 <template>
   <div
     id="app"
-    class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50"
+    class="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-indigo-50"
   >
     <!-- Header -->
     <header
@@ -13,7 +13,7 @@
           <div class="flex items-center space-x-4">
             <div class="relative">
               <div
-                class="w-10 h-10 bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 rounded-xl shadow-lg flex items-center justify-center transform hover:scale-105 transition-transform duration-200"
+                class="w-10 h-10 bg-linear-to-br from-blue-500 via-indigo-500 to-purple-600 rounded-xl shadow-lg flex items-center justify-center transform hover:scale-105 transition-transform duration-200"
               >
                 <svg
                   class="w-6 h-6 text-white"
@@ -33,7 +33,7 @@
             </div>
             <div class="flex flex-col">
               <h1
-                class="text-xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-600 bg-clip-text text-transparent"
+                class="text-xl font-bold bg-linear-to-r from-gray-900 via-blue-800 to-indigo-600 bg-clip-text text-transparent"
               >
                 Orari Tracker
               </h1>

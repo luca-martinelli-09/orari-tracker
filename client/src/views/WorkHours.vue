@@ -6,7 +6,7 @@
       >
         <div class="flex items-center space-x-3">
           <div
-            class="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center"
+            class="w-10 h-10 bg-linear-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center"
           >
             <svg
               class="w-6 h-6 text-white"
@@ -57,7 +57,7 @@
           <button
             @click="saveAllWorkHours"
             :disabled="saving"
-            class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-lg hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 transition-all duration-200 flex items-center space-x-2 shadow-sm"
+            class="bg-linear-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-lg hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 transition-all duration-200 flex items-center space-x-2 shadow-sm"
           >
             <svg
               v-if="saving"
@@ -91,7 +91,7 @@
           </button>
           <button
             @click="generatePDF"
-            class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 flex items-center space-x-2 shadow-sm"
+            class="bg-linear-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 flex items-center space-x-2 shadow-sm"
           >
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path
@@ -122,7 +122,7 @@
       <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
         <div class="flex items-center space-x-3 mb-6">
           <div
-            class="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center"
+            class="w-8 h-8 bg-linear-to-r from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center"
           >
             <svg
               class="w-5 h-5 text-white"
@@ -143,7 +143,7 @@
         </div>
         <div class="space-y-4">
           <div
-            class="flex justify-between items-center p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg"
+            class="flex justify-between items-center p-3 bg-linear-to-r from-blue-50 to-indigo-50 rounded-lg"
           >
             <span class="text-gray-700 font-medium">Ore totali:</span>
             <span class="font-bold text-blue-600 text-lg"
@@ -151,7 +151,7 @@
             >
           </div>
           <div
-            class="flex justify-between items-center p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg"
+            class="flex justify-between items-center p-3 bg-linear-to-r from-green-50 to-emerald-50 rounded-lg"
           >
             <span class="text-gray-700 font-medium">Giorni lavorati:</span>
             <span class="font-bold text-green-600 text-lg">{{
@@ -159,7 +159,7 @@
             }}</span>
           </div>
           <div
-            class="flex justify-between items-center p-3 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-lg"
+            class="flex justify-between items-center p-3 bg-linear-to-r from-yellow-50 to-amber-50 rounded-lg"
           >
             <span class="text-gray-700 font-medium">Giorni di ferie:</span>
             <span class="font-bold text-yellow-600 text-lg">{{
@@ -167,7 +167,7 @@
             }}</span>
           </div>
           <div
-            class="flex justify-between items-center p-3 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg"
+            class="flex justify-between items-center p-3 bg-linear-to-r from-orange-50 to-red-50 rounded-lg"
           >
             <span class="text-gray-700 font-medium">Giorni di malattia:</span>
             <span class="font-bold text-orange-600 text-lg">{{
@@ -175,7 +175,7 @@
             }}</span>
           </div>
           <div
-            class="flex justify-between items-center p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg"
+            class="flex justify-between items-center p-3 bg-linear-to-r from-purple-50 to-pink-50 rounded-lg"
           >
             <span class="text-gray-700 font-medium">Giorni di permesso:</span>
             <span class="font-bold text-purple-600 text-lg">{{
@@ -188,7 +188,7 @@
       <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
         <div class="flex items-center space-x-3 mb-6">
           <div
-            class="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-600 rounded-lg flex items-center justify-center"
+            class="w-8 h-8 bg-linear-to-r from-orange-500 to-red-600 rounded-lg flex items-center justify-center"
           >
             <svg
               class="w-5 h-5 text-white"
@@ -245,7 +245,7 @@
               <div
                 v-for="file in dayAttachments"
                 :key="file._id"
-                class="flex items-center justify-between p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border"
+                class="flex items-center justify-between p-3 bg-linear-to-r from-gray-50 to-gray-100 rounded-lg border"
               >
                 <div class="flex items-center space-x-3">
                   <div
