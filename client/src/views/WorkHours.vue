@@ -87,7 +87,7 @@
               />
             </svg>
             <span v-if="saving">Salvataggio...</span>
-            <span v-else>Salva Tutto</span>
+            <span v-else>Salva</span>
           </button>
           <button
             @click="generatePDF"

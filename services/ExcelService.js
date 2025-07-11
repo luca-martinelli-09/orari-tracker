@@ -361,36 +361,30 @@ class ExcelService {
         let value = cell.value;
 
         // Gestisci i diversi tipi di dati
-        if (cell.value instanceof Date) {
-          value = cell.value.toLocaleDateString("it-IT");
+        if (value && value.richText) {
+          value = value.richText.map(rt => rt.text).join('');
+        } else if (value instanceof Date) {
+          value = value.toLocaleDateString("it-IT");
         } else if (
-          typeof cell.value === "number" &&
+          typeof value === "number" &&
           cell.numFmt &&
           cell.numFmt.includes("€")
         ) {
-          value = `€${cell.value.toFixed(2)}`;
+          value = `€${value.toFixed(2)}`;
         }
 
-        rowData[colNumber] = value || "";
+        rowData[colNumber] = value ? value.toString() : "";
       });
       rows[rowNumber] = rowData;
     });
 
-    // Trova il titolo (prima riga non vuota)
+    // Trova il titolo (prima riga con testo in grassetto)
     let title = "";
     for (let i = 1; i < rows.length && i <= 10; i++) {
-      if (rows[i]) {
-        for (let j = 1; j < rows[i].length; j++) {
-          if (
-            rows[i][j] &&
-            typeof rows[i][j] === "string" &&
-            rows[i][j].length > 5
-          ) {
-            title = rows[i][j];
-            break;
-          }
-        }
-        if (title) break;
+      const row = worksheet.getRow(i);
+      if (rows[i] && rows[i][1] && row.getCell(1).font && row.getCell(1).font.bold) {
+        title = rows[i][1];
+        break;
       }
     }
 
@@ -401,59 +395,30 @@ class ExcelService {
     // Genera la tabella
     html += "<table>";
 
-    let inDataSection = false;
     let headerFound = false;
-
     for (let i = 1; i < rows.length; i++) {
       if (!rows[i]) continue;
 
-      const row = rows[i];
-      const hasData = row.some((cell) => cell && cell.toString().trim() !== "");
+      const rowData = rows[i];
+      const isHeader = rowData.some(cell => cell && (cell.toLowerCase().includes("data") || cell.toLowerCase().includes("giorno")));
 
-      if (!hasData) continue;
-
-      // Cerca l'intestazione della tabella
-      if (
-        !headerFound &&
-        row.some(
-          (cell) =>
-            cell &&
-            typeof cell === "string" &&
-            (cell.toLowerCase().includes("data") ||
-              cell.toLowerCase().includes("giorno")),
-        )
-      ) {
+      if (isHeader && !headerFound) {
         headerFound = true;
-        inDataSection = true;
-
         html += "<tr>";
-        for (let j = 1; j < row.length && j <= 8; j++) {
-          html += `<th>${row[j] || ""}</th>`;
+        for (let j = 1; j <= 8; j++) {
+          html += `<th>${rowData[j] || ""}</th>`;
         }
         html += "</tr>";
-        continue;
-      }
-
-      // Se siamo nella sezione dati
-      if (inDataSection && headerFound) {
-        // Controlla se è una riga di riepilogo
-        if (
-          row.some(
-            (cell) =>
-              cell &&
-              typeof cell === "string" &&
-              (cell.includes("RIEPILOGO") || cell.includes("TOTALE")),
-          )
-        ) {
-          html += "</table>";
-          html += `<div class="summary">${row.filter((cell) => cell).join(" ")}</div>`;
-          continue;
+      } else if (headerFound) {
+        // Stop if we reach the summary
+        if (rowData.some(cell => cell && (cell.includes("RIEPILOGO") || cell.includes("TOTALE")))) {
+          break;
         }
 
         html += "<tr>";
-        for (let j = 1; j < row.length && j <= 8; j++) {
-          const cellValue = row[j] || "";
-          const isAmount = j === 4 || j === 7; // Colonne degli importi
+        for (let j = 1; j <= 8; j++) {
+          const cellValue = rowData[j] || "";
+          const isAmount = j === 4 || j === 7;
           const cssClass = isAmount ? "currency" : "";
           html += `<td class="${cssClass}">${cellValue}</td>`;
         }
@@ -461,7 +426,15 @@ class ExcelService {
       }
     }
 
-    html += "</table></body></html>";
+    html += "</table>";
+
+    // Aggiungi riepilogo se presente
+    const summaryRow = rows.find(r => r && r.some(cell => cell && cell.includes("RIEPILOGO")));
+    if (summaryRow) {
+      html += `<div class="summary">${summaryRow.filter(cell => cell).join(" ")}</div>`;
+    }
+
+    html += "</body></html>";
     return html;
   }
 
