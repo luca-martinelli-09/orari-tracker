@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const PDFService = require("../services/PDFService");
 const ExcelService = require("../services/ExcelService");
 const WorkHour = require("../models/WorkHour");
 const Expense = require("../models/Expense");
@@ -164,9 +163,8 @@ router.get("/expenses/:year/:month", async (req, res) => {
               "..",
               expense.trenitalia.pdfUrl,
             );
-            if (fs.existsSync(existingPath)) {
-              ticketPDFs.push(existingPath);
-            }
+
+            ticketPDFs.push(existingPath);
           }
         } catch (pdfError) {
           console.error(
@@ -187,16 +185,34 @@ router.get("/expenses/:year/:month", async (req, res) => {
     );
 
     // Converti Excel in PDF
-    const pdfPath = await excelService.convertExcelToPDF(excelPath);
+    let pdfPath = path.join(__dirname, "../output/", `rimborsi-${month}-${year}.pdf`); // await excelService.convertExcelToPDF(excelPath);
 
     // Unisci i PDF dei biglietti al PDF principale
-    const finalPdfPath = await excelService.addAttachmentsToPDF(
+    pdfPath = await excelService.addAttachmentsToPDF(
       pdfPath,
       ticketPDFs,
     );
 
+    // Other attachments
+    const otherAttachments = expenses.reduce((acc, expense) => {
+      if (expense.attachments && expense.attachments.length > 0) {
+        acc.push(...expense.attachments.map((a) => path.join(
+          __dirname,
+          "..",
+          a.path,
+        )));
+      }
+
+      return acc;
+    }, []);
+
+    pdfPath = await excelService.addAttachmentsToPDF(
+      pdfPath,
+      otherAttachments
+    );
+
     // Invia il PDF
-    const pdfBuffer = fs.readFileSync(finalPdfPath);
+    const pdfBuffer = fs.readFileSync(pdfPath);
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
@@ -211,11 +227,11 @@ router.get("/expenses/:year/:month", async (req, res) => {
         if (fs.existsSync(excelPath)) fs.unlinkSync(excelPath);
         if (fs.existsSync(pdfPath)) fs.unlinkSync(pdfPath);
         if (
-          typeof finalPdfPath !== "undefined" &&
-          finalPdfPath !== pdfPath &&
-          fs.existsSync(finalPdfPath)
+          typeof pdfPath !== "undefined" &&
+          pdfPath !== pdfPath &&
+          fs.existsSync(pdfPath)
         )
-          fs.unlinkSync(finalPdfPath);
+          fs.unlinkSync(pdfPath);
       } catch (cleanupError) {
         console.error("Error cleaning up temporary files:", cleanupError);
       }

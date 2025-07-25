@@ -51,7 +51,7 @@ router.post("/upload", upload.single("file"), async (req, res) => {
     const attachment = new Attachment({
       filename: req.file.filename,
       originalName: req.file.originalname,
-      path: req.file.path,
+      path: "/uploads/" + req.file.filename,
       mimetype: req.file.mimetype,
       size: req.file.size,
       type: req.body.type || "expense_receipt",

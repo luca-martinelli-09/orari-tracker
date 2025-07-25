@@ -1,6 +1,7 @@
 const ExcelJS = require("exceljs");
 const path = require("path");
 const fs = require("fs");
+const mime = require('mime-types');
 const puppeteer = require("puppeteer");
 const { PDFDocument } = require("pdf-lib");
 
@@ -315,6 +316,7 @@ class ExcelService {
       await page.pdf({
         path: pdfPath,
         format: "A4",
+        landscape: true,
         margin: {
           top: "1cm",
           right: "1cm",
@@ -448,43 +450,53 @@ class ExcelService {
       const mergedPdf = await PDFDocument.create();
 
       // Leggi e aggiungi il PDF principale
-      const mainPdfBytes = fs.readFileSync(mainPdfPath);
-      const mainPdf = await PDFDocument.load(mainPdfBytes);
-      const mainPages = await mergedPdf.copyPages(
-        mainPdf,
-        mainPdf.getPageIndices(),
-      );
-      mainPages.forEach((page) => mergedPdf.addPage(page));
-
-      // Aggiungi una pagina di separazione
-      if (attachmentPaths.length > 0) {
-        const separatorPage = mergedPdf.addPage();
-        const { height } = separatorPage.getSize();
-
-        separatorPage.drawText("ALLEGATI", {
-          x: 50,
-          y: height - 50,
-          size: 20,
-        });
+      if (mainPdfPath?.length && fs.existsSync(mainPdfPath)) {
+        const mainPdfBytes = fs.readFileSync(mainPdfPath);
+        const mainPdf = await PDFDocument.load(mainPdfBytes);
+        const mainPages = await mergedPdf.copyPages(
+          mainPdf,
+          mainPdf.getPageIndices(),
+        );
+        mainPages.forEach((page) => mergedPdf.addPage(page));
       }
 
       // Aggiungi ogni allegato PDF
       for (const attachmentPath of attachmentPaths) {
         if (fs.existsSync(attachmentPath)) {
           try {
-            const attachmentBytes = fs.readFileSync(attachmentPath);
-            const attachmentPdf = await PDFDocument.load(attachmentBytes);
-            const attachmentPages = await mergedPdf.copyPages(
-              attachmentPdf,
-              attachmentPdf.getPageIndices(),
+            const isImage = ["image/jpeg", "image/png", "image/gif"].includes(
+              mime.lookup(attachmentPath),
             );
-            attachmentPages.forEach((page) => mergedPdf.addPage(page));
+
+            if (isImage) {
+              const image = await mergedPdf.embedJpg(fs.readFileSync(attachmentPath));
+              const page = mergedPdf.addPage();
+              const { height, width } = page.getSize();
+              const scale = Math.min(0.9 * width / image.width, 0.9 * height / image.height);
+              page.drawImage(image, {
+                x: (width - image.width * scale) / 2,
+                y: (height - image.height * scale) / 2,
+                width: image.width * scale,
+                height: image.height * scale,
+              });
+            } else {
+              const attachmentBytes = fs.readFileSync(attachmentPath);
+              const attachmentPdf = await PDFDocument.load(attachmentBytes);
+              const attachmentPages = await mergedPdf.copyPages(
+                attachmentPdf,
+                attachmentPdf.getPageIndices(),
+              );
+              attachmentPages.forEach((page) => mergedPdf.addPage(page));
+            }
+
           } catch (attachmentError) {
             console.error(
               `Error adding attachment ${attachmentPath}:`,
               attachmentError,
             );
           }
+        } else {
+          console.warn(attachmentPath, "non esiste")
         }
       }
 
